@@ -28,6 +28,7 @@
   },
   "private": true,
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
     "@nestjs/common": "^7.0.0",
     "@nestjs/config": "^0.6.1",
     "@nestjs/core": "^7.0.0",
@@ -45,7 +46,6 @@
     "tslib": "^2.0.0"
   },
   "devDependencies": {
-    "@hapi/joi": "^17.1.1",
     "@nestjs/schematics": "^7.0.0",
     "@nestjs/testing": "^7.0.0",
     "@nrwl/cli": "11.1.5",
