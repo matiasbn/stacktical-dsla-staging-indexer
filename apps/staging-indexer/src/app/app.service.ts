@@ -2,7 +2,9 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
-  getData(): { message: string } {
-    return { message: 'Welcome to staging-indexer!' };
+  getData() {
+    return {
+      data: { getSLI: 100 - Math.random() * 10 },
+    };
   }
 }
