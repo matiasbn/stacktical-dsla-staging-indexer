@@ -3,6 +3,7 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { SLI } from './sli.schema';
 import { APIQuery } from './types';
+import { toChecksumAddress } from 'web3-utils';
 
 @Injectable()
 export class SLIRepository {
@@ -11,7 +12,7 @@ export class SLIRepository {
   findExistingSLI(params: APIQuery): Promise<SLI> {
     return this.sliModel
       .findOne({
-        slaAddress: params.sla_address,
+        slaAddress: toChecksumAddress(params.sla_address),
         slaMonitoringStart: params.sla_monitoring_start,
         slaMonitoringEnd: params.sla_monitoring_end,
       })
@@ -22,15 +23,17 @@ export class SLIRepository {
     params: APIQuery,
     hits: number,
     misses: number,
-    validations: number
+    validations: number,
+    efficiency: number
   ): Promise<SLI> {
     return this.sliModel.create({
-      slaAddress: params.sla_address,
+      slaAddress: toChecksumAddress(params.sla_address),
       slaMonitoringStart: params.sla_monitoring_start,
       slaMonitoringEnd: params.sla_monitoring_end,
       hits,
       misses,
       validations,
+      efficiency,
     });
   }
   //

@@ -20,6 +20,9 @@ export class SLI extends Document {
 
   @Prop({ required: true })
   validations: number;
+
+  @Prop({ required: true })
+  efficiency: number;
 }
 
 export const SLISchema = SchemaFactory.createForClass(SLI);
