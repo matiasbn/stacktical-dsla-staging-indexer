@@ -1,3 +1,3 @@
 module.exports = {
-  projects: ['<rootDir>/apps/staging-indexer'],
+  projects: ['<rootDir>/apps/staging-api'],
 };
