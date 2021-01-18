@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "nx": "nx",
-    "start": "nx serve",
+    "start": "node dist/apps/staging-indexer/main.js",
+    "dev": "nx serve",
     "build": "nx build",
     "test": "nx test",
     "lint": "nx workspace-lint && nx lint",
