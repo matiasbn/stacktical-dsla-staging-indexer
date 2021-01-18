@@ -1,0 +1,68 @@
+{
+  "version": 2,
+  "projects": {
+    "staging-indexer": {
+      "root": "apps/staging-indexer",
+      "sourceRoot": "apps/staging-indexer/src",
+      "projectType": "application",
+      "prefix": "staging-indexer",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:build",
+          "outputs": [
+            "{options.outputPath}"
+          ],
+          "options": {
+            "outputPath": "dist/apps/staging-indexer",
+            "main": "apps/staging-indexer/src/main.ts",
+            "tsConfig": "apps/staging-indexer/tsconfig.app.json",
+            "assets": [
+              "apps/staging-indexer/src/assets"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/staging-indexer/src/environments/environment.ts",
+                  "with": "apps/staging-indexer/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "staging-indexer:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/staging-indexer/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/apps/staging-indexer"
+          ],
+          "options": {
+            "jestConfig": "apps/staging-indexer/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "defaultCollection": "@nrwl/nest"
+  },
+  "defaultProject": "staging-indexer"
+}
