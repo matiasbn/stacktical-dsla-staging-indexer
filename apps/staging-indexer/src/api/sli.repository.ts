@@ -23,8 +23,10 @@ export class SLIRepository {
     params: APIQuery,
     hits: number,
     misses: number,
-    validations: number,
-    efficiency: number
+    total: number,
+    efficiency: number,
+    totalStake: number,
+    delegators: Array<string>
   ): Promise<SLI> {
     return this.sliModel.create({
       slaAddress: toChecksumAddress(params.sla_address),
@@ -32,8 +34,10 @@ export class SLIRepository {
       slaMonitoringEnd: params.sla_monitoring_end,
       hits,
       misses,
-      validations,
+      total,
       efficiency,
+      totalStake,
+      delegators,
     });
   }
 }

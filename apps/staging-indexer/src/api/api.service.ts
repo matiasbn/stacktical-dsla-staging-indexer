@@ -1,37 +1,56 @@
 import { Injectable } from '@nestjs/common';
-import { APIQuery } from './types';
+import { APIQuery, APIResponse } from './types';
 import { SLIRepository } from './sli.repository';
+import { SLI } from './sli.schema';
+import { toChecksumAddress } from 'web3-utils';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class ApiService {
   constructor(private readonly sliRepository: SLIRepository) {}
 
-  async getSLI(params: APIQuery) {
+  responseParser(sliData: SLI): APIResponse {
+    const data = {
+      total: sliData.total,
+      hits: sliData.hits,
+      misses: sliData.misses,
+      efficiency: sliData.efficiency,
+      totalStake: sliData.totalStake,
+      delegators: sliData.delegators,
+    };
+    return {
+      data,
+      sliData: JSON.stringify(data).replace(/["{}]/gi, ''),
+    };
+  }
+
+  async getSLI(params: APIQuery): Promise<APIResponse> {
     const existingSLI = await this.sliRepository.findExistingSLI(params);
     if (existingSLI) {
-      const { hits, misses, validations, efficiency } = existingSLI;
-      return {
-        data: {
-          validations,
-          hits,
-          misses,
-          getSLI: efficiency,
-        },
-      };
+      return this.responseParser(existingSLI);
     }
-    const validations = Math.floor(10000 * Math.random());
-    const hits = Math.floor((validations * (100 - Math.random() * 10)) / 100);
-    const misses = validations - hits;
-    const efficiency = (hits / validations) * 100;
-    await this.sliRepository.storeNewSLI(
+    const delegatorsNumber = Math.floor(10 * Math.random()) + 1;
+    const delegators = [];
+    for (let index = 0; index < delegatorsNumber; index++) {
+      const delegator = toChecksumAddress(
+        '0x' + crypto.randomBytes(20).toString('hex')
+      );
+      delegators.push(delegator);
+    }
+    const total = Math.floor(10000 * Math.random());
+    const totalStake = Math.floor(10000 * Math.random());
+    const hits = Math.floor((total * (100 - Math.random() * 10)) / 100);
+    const misses = total - hits;
+    const efficiency = Math.round((hits / total) * 100 * 1000);
+    const newSli = await this.sliRepository.storeNewSLI(
       params,
       hits,
       misses,
-      validations,
-      efficiency
+      total,
+      efficiency,
+      totalStake,
+      delegators
     );
-    return {
-      data: { validations, hits, misses, getSLI: efficiency },
-    };
+    return this.responseParser(newSli);
   }
 }
