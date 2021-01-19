@@ -7,6 +7,7 @@ import { APIQuery } from './types';
 export class ApiController {
   constructor(private readonly appService: ApiService) {}
   private readonly logger = new Logger(ApiController.name);
+
   @Get()
   getData(@Query() params) {
     const { query } = params;
