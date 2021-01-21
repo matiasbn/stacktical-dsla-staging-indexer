@@ -37,6 +37,7 @@
     "apollo-server-express": "^2.19.2",
     "class-transformer": "^0.3.2",
     "class-validator": "^0.13.1",
+    "crypto-random-string": "^3.3.0",
     "express-rate-limit": "^5.2.3",
     "helmet": "^4.4.0",
     "mongoose": "^5.11.12",

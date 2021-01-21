@@ -19,10 +19,19 @@ export class SLI extends Document {
   misses: number;
 
   @Prop({ required: true })
-  validations: number;
+  total: number;
 
   @Prop({ required: true })
   efficiency: number;
+
+  @Prop({ required: true })
+  totalStake: number;
+
+  @Prop({ required: true })
+  delegators: Array<string>;
+
+  @Prop({ required: true })
+  getSLI: number;
 }
 
 export const SLISchema = SchemaFactory.createForClass(SLI);
