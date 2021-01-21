@@ -29,6 +29,9 @@ export class SLI extends Document {
 
   @Prop({ required: true })
   delegators: Array<string>;
+
+  @Prop({ required: true })
+  getSLI: number;
 }
 
 export const SLISchema = SchemaFactory.createForClass(SLI);

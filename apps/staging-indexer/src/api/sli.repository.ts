@@ -26,7 +26,8 @@ export class SLIRepository {
     total: number,
     efficiency: number,
     totalStake: number,
-    delegators: Array<string>
+    delegators: Array<string>,
+    getSLI: number
   ): Promise<SLI> {
     return this.sliModel.create({
       slaAddress: toChecksumAddress(params.sla_address),
@@ -38,6 +39,7 @@ export class SLIRepository {
       efficiency,
       totalStake,
       delegators,
+      getSLI,
     });
   }
 }

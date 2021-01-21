@@ -11,16 +11,17 @@ export class ApiService {
 
   responseParser(sliData: SLI): APIResponse {
     const data = {
+      getSLI: sliData.efficiency,
       total: sliData.total,
+      totalStake: sliData.totalStake,
       hits: sliData.hits,
       misses: sliData.misses,
       efficiency: sliData.efficiency,
-      totalStake: sliData.totalStake,
       delegators: sliData.delegators,
     };
     return {
       data,
-      sliData: JSON.stringify(data).replace(/["{}]/gi, ''),
+      sliData: sliData.hits + ',' + sliData.misses,
     };
   }
 
@@ -41,7 +42,7 @@ export class ApiService {
     const totalStake = Math.floor(10000 * Math.random());
     const hits = Math.floor((total * (100 - Math.random() * 10)) / 100);
     const misses = total - hits;
-    const efficiency = Math.round((hits / total) * 100 * 1000);
+    const efficiency = Math.trunc((hits / total) * 100 * 1000);
     const newSli = await this.sliRepository.storeNewSLI(
       params,
       hits,
@@ -49,7 +50,8 @@ export class ApiService {
       total,
       efficiency,
       totalStake,
-      delegators
+      delegators,
+      efficiency
     );
     return this.responseParser(newSli);
   }

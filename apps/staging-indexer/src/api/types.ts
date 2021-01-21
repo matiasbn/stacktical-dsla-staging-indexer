@@ -7,11 +7,12 @@ export interface APIQuery {
 export interface APIResponse {
   data: {
     total: number;
-    hits: number;
-    misses: number;
-    efficiency: number;
-    delegators: Array<string>;
     totalStake: number;
+    hits: number;
+    efficiency: number;
+    misses: number;
+    delegators: Array<string>;
+    getSLI: number;
   };
   sliData: string;
 }
