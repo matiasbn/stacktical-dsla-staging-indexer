@@ -31,7 +31,7 @@ export class SLI extends Document {
   delegators: Array<string>;
 
   @Prop({ required: true })
-  getSLI: number;
+  ipfsHash: string;
 }
 
 export const SLISchema = SchemaFactory.createForClass(SLI);

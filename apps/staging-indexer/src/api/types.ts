@@ -12,7 +12,6 @@ export interface APIResponse {
     efficiency: number;
     misses: number;
     delegators: Array<string>;
-    getSLI: number;
   };
   sliData: string;
 }

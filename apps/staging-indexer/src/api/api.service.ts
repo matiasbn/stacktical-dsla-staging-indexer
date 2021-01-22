@@ -5,15 +5,17 @@ import { SLI } from './sli.schema';
 import { toChecksumAddress } from 'web3-utils';
 import * as crypto from 'crypto';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const createClient = require('ipfs-http-client');
+
 @Injectable()
 export class ApiService {
   constructor(private readonly sliRepository: SLIRepository) {}
 
   responseParser(sliData: SLI): APIResponse {
     const data = {
-      getSLI: sliData.efficiency,
-      total: sliData.total,
       totalStake: sliData.totalStake,
+      total: sliData.total,
       hits: sliData.hits,
       misses: sliData.misses,
       efficiency: sliData.efficiency,
@@ -50,9 +52,22 @@ export class ApiService {
       total,
       efficiency,
       totalStake,
-      delegators,
-      efficiency
+      delegators
     );
-    return this.responseParser(newSli);
+    const sliParsed = await this.responseParser(newSli);
+    const { data } = sliParsed;
+
+    const ipfsClient = createClient({
+      host: 'ipfs.dsla.network',
+      port: 443,
+      protocol: 'https',
+    });
+
+    const dataString = JSON.stringify(data);
+    const buffer = Buffer.from(dataString, 'utf-8');
+    const { path } = await ipfsClient.add(buffer);
+    await this.sliRepository.updateIpfsHash(newSli, path);
+
+    return sliParsed;
   }
 }
