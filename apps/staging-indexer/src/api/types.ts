@@ -11,6 +11,7 @@ export interface APIResponse {
     hits: number;
     efficiency: number;
     misses: number;
+    ipfsHash: string;
     delegators: Array<string>;
   };
   sliData: string;

@@ -20,6 +20,7 @@ export class ApiService {
       misses: sliData.misses,
       efficiency: sliData.efficiency,
       delegators: sliData.delegators,
+      ipfsHash: sliData.ipfsHash,
     };
     return {
       data,
@@ -66,8 +67,7 @@ export class ApiService {
     const dataString = JSON.stringify(data);
     const buffer = Buffer.from(dataString, 'utf-8');
     const { path } = await ipfsClient.add(buffer);
-    await this.sliRepository.updateIpfsHash(newSli, path);
-
-    return sliParsed;
+    const ipfsSLI = await this.sliRepository.updateIpfsHash(newSli, path);
+    return this.responseParser(ipfsSLI);
   }
 }

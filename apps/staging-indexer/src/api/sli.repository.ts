@@ -44,7 +44,7 @@ export class SLIRepository {
 
   updateIpfsHash(sli: SLI, ipfsHash: string): Promise<SLI> {
     return this.sliModel
-      .updateOne({ _id: sli._id }, { $set: { ipfsHash } })
+      .findByIdAndUpdate(sli._id, { $set: { ipfsHash } }, { new: true })
       .exec();
   }
 }
