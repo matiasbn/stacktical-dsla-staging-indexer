@@ -5,14 +5,19 @@ export interface APIQuery {
 }
 
 export interface APIResponse {
-  data: {
-    total: number;
-    totalStake: number;
-    hits: number;
-    efficiency: number;
-    misses: number;
-    ipfsHash: string;
-    delegators: Array<string>;
-  };
+  data: IPFSDataWithHash;
   sliData: string;
+}
+
+export interface IPFSData {
+  total: number;
+  totalStake: number;
+  hits: number;
+  efficiency: number;
+  misses: number;
+  delegators: Array<string>;
+}
+
+export interface IPFSDataWithHash extends IPFSData {
+  ipfsHash: string;
 }

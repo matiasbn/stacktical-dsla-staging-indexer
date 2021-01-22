@@ -26,7 +26,8 @@ export class SLIRepository {
     total: number,
     efficiency: number,
     totalStake: number,
-    delegators: Array<string>
+    delegators: Array<string>,
+    ipfsHash: string
   ): Promise<SLI> {
     return this.sliModel.create({
       slaAddress: toChecksumAddress(params.sla_address),
@@ -38,13 +39,7 @@ export class SLIRepository {
       efficiency,
       totalStake,
       delegators,
-      ipfsHash: ' ',
+      ipfsHash,
     });
-  }
-
-  updateIpfsHash(sli: SLI, ipfsHash: string): Promise<SLI> {
-    return this.sliModel
-      .findByIdAndUpdate(sli._id, { $set: { ipfsHash } }, { new: true })
-      .exec();
   }
 }

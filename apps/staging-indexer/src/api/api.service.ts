@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { APIQuery, APIResponse } from './types';
+import { APIQuery, APIResponse, IPFSData, IPFSDataWithHash } from './types';
 import { SLIRepository } from './sli.repository';
 import { SLI } from './sli.schema';
 import { toChecksumAddress } from 'web3-utils';
@@ -13,14 +13,14 @@ export class ApiService {
   constructor(private readonly sliRepository: SLIRepository) {}
 
   responseParser(sliData: SLI): APIResponse {
-    const data = {
+    const data: IPFSDataWithHash = {
       totalStake: sliData.totalStake,
       total: sliData.total,
       hits: sliData.hits,
       misses: sliData.misses,
       efficiency: sliData.efficiency,
-      delegators: sliData.delegators,
       ipfsHash: sliData.ipfsHash,
+      delegators: sliData.delegators,
     };
     return {
       data,
@@ -46,17 +46,6 @@ export class ApiService {
     const hits = Math.floor((total * (100 - Math.random() * 10)) / 100);
     const misses = total - hits;
     const efficiency = Math.trunc((hits / total) * 100 * 1000);
-    const newSli = await this.sliRepository.storeNewSLI(
-      params,
-      hits,
-      misses,
-      total,
-      efficiency,
-      totalStake,
-      delegators
-    );
-    const sliParsed = await this.responseParser(newSli);
-    const { data } = sliParsed;
 
     const ipfsClient = createClient({
       host: 'ipfs.dsla.network',
@@ -64,10 +53,30 @@ export class ApiService {
       protocol: 'https',
     });
 
-    const dataString = JSON.stringify(data);
+    const ipfsData: IPFSData = {
+      totalStake,
+      total,
+      hits,
+      misses,
+      efficiency,
+      delegators,
+    };
+
+    const dataString = JSON.stringify(ipfsData);
     const buffer = Buffer.from(dataString, 'utf-8');
-    const { path } = await ipfsClient.add(buffer);
-    const ipfsSLI = await this.sliRepository.updateIpfsHash(newSli, path);
-    return this.responseParser(ipfsSLI);
+    const { path: ipfsHash } = await ipfsClient.add(buffer);
+
+    const newSli = await this.sliRepository.storeNewSLI(
+      params,
+      hits,
+      misses,
+      total,
+      efficiency,
+      totalStake,
+      delegators,
+      ipfsHash
+    );
+
+    return this.responseParser(newSli);
   }
 }
