@@ -12,9 +12,9 @@ import { ApiService } from './api.service';
 import {
   GetSLIParams,
   GetSLIResponse,
-  GetAnalyticsParams,
   GetAnalyticsResponse,
-} from './types';
+} from './api.types';
+import { GetAnalyticsParams } from './api.dtos';
 
 @Controller('api')
 export class ApiController {

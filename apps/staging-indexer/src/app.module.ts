@@ -19,8 +19,8 @@ class ExtendedLogger extends Logger {
       isGlobal: true,
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
-          .valid('development', 'staging', 'production')
-          .default('development'),
+          .valid('develop', 'staging', 'production')
+          .default('develop'),
         MONGODB_URI: Joi.string().required(),
       }),
       validationOptions: {

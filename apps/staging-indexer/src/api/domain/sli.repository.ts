@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { SLI } from './sli.schema';
-import { GetSLIParams, ValidatorDataWithIPFSHash } from '../types';
+import { GetSLIParams, ValidatorDataWithIPFSHash } from '../api.types';
 import { toChecksumAddress } from 'web3-utils';
 
 @Injectable()

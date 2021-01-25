@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { GetAnalyticsParams, WeekAnalyticsData } from '../types';
+import { WeekAnalyticsData } from '../api.types';
 import { WeekAnalytics } from './week-analytics.schema';
+import { GetAnalyticsParams } from '../api.dtos';
 
 @Injectable()
 export class WeekAnalyticsRepository {

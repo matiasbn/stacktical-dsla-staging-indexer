@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { ValidatorData } from '../types';
+import { ValidatorData } from '../api.types';
 
 @Schema({ timestamps: true })
 export class WeekAnalytics extends Document {

@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import {
-  GetAnalyticsParams,
   GetAnalyticsResponse,
   GetSLIParams,
   GetSLIResponse,
-} from './types';
+} from './api.types';
 import { SLIRepository } from './domain/sli.repository';
 import { ApiHelpers } from './api.helpers';
 import { WeekAnalyticsRepository } from './domain/week-analytics.repository';
+import { GetAnalyticsParams } from './api.dtos';
 
 @Injectable()
 export class ApiService {

@@ -9,12 +9,6 @@ export interface GetSLIResponse {
   sliData: string;
 }
 
-export interface GetAnalyticsParams {
-  network: string;
-  year: number;
-  week_id: number;
-}
-
 export interface GetAnalyticsResponse extends WeekAnalyticsData {
   ipfsHash: string;
 }

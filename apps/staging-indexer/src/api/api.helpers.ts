@@ -7,14 +7,14 @@ import {
   ValidatorData,
   ValidatorDataWithIPFSHash,
   WeekAnalyticsData,
-} from './types';
+} from './api.types';
 import { Injectable } from '@nestjs/common';
 import { WeekAnalytics } from './domain/week-analytics.schema';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const createClient = require('ipfs-http-client');
 
-const networks = {
+export const networks = {
   ONE: { validators: ['P-OPS', 'Chainode', 'Everstake'] },
   DOT: { validators: ['Everstake', 'Figment', 'stakefish'] },
   ATOM: { validators: ['Everstake', 'Figment', 'stakefish'] },
