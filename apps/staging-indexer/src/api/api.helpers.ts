@@ -10,6 +10,7 @@ import {
 } from './api.types';
 import { Injectable } from '@nestjs/common';
 import { WeekAnalytics } from './domain/week-analytics.schema';
+import { ConfigService } from '@nestjs/config';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const createClient = require('ipfs-http-client');
@@ -23,15 +24,14 @@ export const networks = {
 
 @Injectable()
 export class ApiHelpers {
+  constructor(private readonly configService: ConfigService) {}
   createRandomAddress() {
     return toChecksumAddress('0x' + crypto.randomBytes(20).toString('hex'));
   }
 
   async storeDataOnIFPS(ipfsData): Promise<string> {
     const ipfsClient = createClient({
-      host: 'localhost',
-      port: 5001,
-      protocol: 'http',
+      url: this.configService.get<string>('IPFS_URI'),
     });
 
     const dataString = JSON.stringify(ipfsData);
