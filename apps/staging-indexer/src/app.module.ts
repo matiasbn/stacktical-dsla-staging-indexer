@@ -46,7 +46,10 @@ class ExtendedLogger extends Logger {
   providers: [
     {
       provide: APP_INTERCEPTOR,
-      useClass: MorganInterceptor('common', { stream: new ExtendedLogger() }),
+      useClass: MorganInterceptor(
+        ':method :url :status :res[content-length] - :response-time ms',
+        { stream: new ExtendedLogger() }
+      ),
     },
   ],
 })
