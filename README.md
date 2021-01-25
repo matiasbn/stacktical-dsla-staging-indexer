@@ -45,7 +45,7 @@ Here we define the interactions with the Mongo database, to ne called by api ser
 ### sli.schema.ts
 Here we define the Mongoose schema for the SLI object.
 
-### types.ts
+### api.types.ts
 Types file.
 
 ## App path

@@ -19,8 +19,8 @@ class ExtendedLogger extends Logger {
       isGlobal: true,
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
-          .valid('development', 'staging', 'production')
-          .default('development'),
+          .valid('develop', 'staging', 'production')
+          .default('develop'),
         MONGODB_URI: Joi.string().required(),
       }),
       validationOptions: {
@@ -46,7 +46,10 @@ class ExtendedLogger extends Logger {
   providers: [
     {
       provide: APP_INTERCEPTOR,
-      useClass: MorganInterceptor('common', { stream: new ExtendedLogger() }),
+      useClass: MorganInterceptor(
+        ':method :url :status :res[content-length] - :response-time ms',
+        { stream: new ExtendedLogger() }
+      ),
     },
   ],
 })

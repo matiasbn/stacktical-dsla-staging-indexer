@@ -1,58 +1,59 @@
 import { Injectable } from '@nestjs/common';
-import { APIQuery, APIResponse } from './types';
-import { SLIRepository } from './sli.repository';
-import { SLI } from './sli.schema';
-import { toChecksumAddress } from 'web3-utils';
-import * as crypto from 'crypto';
+import {
+  GetAnalyticsResponse,
+  GetSLIParams,
+  GetSLIResponse,
+} from './api.types';
+import { SLIRepository } from './domain/sli.repository';
+import { ApiHelpers } from './api.helpers';
+import { WeekAnalyticsRepository } from './domain/week-analytics.repository';
+import { GetAnalyticsParams } from './api.dtos';
 
 @Injectable()
 export class ApiService {
-  constructor(private readonly sliRepository: SLIRepository) {}
+  constructor(
+    private readonly sliRepository: SLIRepository,
+    private readonly weekAnalyticsRepository: WeekAnalyticsRepository,
+    private readonly apiHelpers: ApiHelpers
+  ) {}
 
-  responseParser(sliData: SLI): APIResponse {
-    const data = {
-      getSLI: sliData.efficiency,
-      total: sliData.total,
-      totalStake: sliData.totalStake,
-      hits: sliData.hits,
-      misses: sliData.misses,
-      efficiency: sliData.efficiency,
-      delegators: sliData.delegators,
-    };
-    return {
-      data,
-      sliData: sliData.hits + ',' + sliData.misses,
-    };
-  }
-
-  async getSLI(params: APIQuery): Promise<APIResponse> {
+  async getSLI(params: GetSLIParams): Promise<GetSLIResponse> {
     const existingSLI = await this.sliRepository.findExistingSLI(params);
     if (existingSLI) {
-      return this.responseParser(existingSLI);
+      return this.apiHelpers.parseGetSLIResponse(existingSLI);
     }
-    const delegatorsNumber = Math.floor(10 * Math.random()) + 1;
-    const delegators = [];
-    for (let index = 0; index < delegatorsNumber; index++) {
-      const delegator = toChecksumAddress(
-        '0x' + crypto.randomBytes(20).toString('hex')
-      );
-      delegators.push(delegator);
-    }
-    const total = Math.floor(10000 * Math.random());
-    const totalStake = Math.floor(10000 * Math.random());
-    const hits = Math.floor((total * (100 - Math.random() * 10)) / 100);
-    const misses = total - hits;
-    const efficiency = Math.trunc((hits / total) * 100 * 1000);
-    const newSli = await this.sliRepository.storeNewSLI(
-      params,
-      hits,
-      misses,
-      total,
-      efficiency,
-      totalStake,
-      delegators,
-      efficiency
+
+    const validatorData = this.apiHelpers.createValidatorData();
+    const ipfsHash = await this.apiHelpers.storeDataOnIFPS(validatorData);
+
+    const newSli = await this.sliRepository.storeNewSLI(params, {
+      ...validatorData,
+      ipfsHash,
+    });
+
+    return this.apiHelpers.parseGetSLIResponse(newSli);
+  }
+
+  async getWeekAnalytics(
+    params: GetAnalyticsParams
+  ): Promise<GetAnalyticsResponse> {
+    const existingWeekAnalytics = await this.weekAnalyticsRepository.findExistingAnalyticsData(
+      params
     );
-    return this.responseParser(newSli);
+    if (existingWeekAnalytics) {
+      return this.apiHelpers.parseWeekAnalyticsResponse(existingWeekAnalytics);
+    }
+
+    const weekAnalyticsData = this.apiHelpers.createWeekAnalyticsData(
+      params.network,
+      params.week_id
+    );
+    const ipfsHash = await this.apiHelpers.storeDataOnIFPS(weekAnalyticsData);
+    const newAnalytics = await this.weekAnalyticsRepository.storeNewAnalyticsData(
+      weekAnalyticsData,
+      ipfsHash,
+      params
+    );
+    return this.apiHelpers.parseWeekAnalyticsResponse(newAnalytics);
   }
 }

@@ -7,6 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = process.env.PORT || 3333;
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  app.useGlobalFilters();
   app.use(
     rateLimit({
       windowMs: 15 * 60 * 1000,
