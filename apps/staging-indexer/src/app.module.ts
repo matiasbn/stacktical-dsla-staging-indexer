@@ -22,6 +22,7 @@ class ExtendedLogger extends Logger {
           .valid('develop', 'staging', 'production')
           .default('develop'),
         MONGODB_URI: Joi.string().required(),
+        IPFS_URI: Joi.string().required(),
       }),
       validationOptions: {
         allowUnknown: true,
