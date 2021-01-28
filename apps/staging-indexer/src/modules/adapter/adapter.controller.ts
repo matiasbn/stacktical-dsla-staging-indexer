@@ -6,7 +6,7 @@ import {
   AdapterResponse,
 } from './adapter.types';
 
-@Controller('api')
+@Controller('adapter')
 export class AdapterController {
   constructor(
     private readonly adapterService: AdapterService,
