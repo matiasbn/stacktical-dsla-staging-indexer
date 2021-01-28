@@ -5,7 +5,7 @@ import { MorganModule, MorganInterceptor } from 'nest-morgan';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import * as Joi from '@hapi/joi';
-import { ApiModule } from './api/api.module';
+import { AdapterModule } from './modules/adapter/adapter.module';
 
 class ExtendedLogger extends Logger {
   write(message: string) {
@@ -41,7 +41,7 @@ class ExtendedLogger extends Logger {
         uri: configService.get<string>('MONGODB_URI'),
       }),
     }),
-    ApiModule,
+    AdapterModule,
   ],
   controllers: [AppController],
   providers: [

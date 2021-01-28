@@ -30,13 +30,13 @@ The service is already deployed on Heroku.
 ## Api Path
 ``apps/staging-indexer/src/api``
 
-### api.controller.ts
+### adapter.controller.ts
 The controller of the API. It parses all the API calls that points to /api route
 
-### api.module.ts
+### adapter.module.ts
 Defines the Api module dependencies.
 
-### api.service.ts
+### adapter.service.ts
 Here we store the endpoints business logic, along with the interaction with the service repositories.
 
 ### sli.repository.ts
@@ -45,7 +45,7 @@ Here we define the interactions with the Mongo database, to ne called by api ser
 ### sli.schema.ts
 Here we define the Mongoose schema for the SLI object.
 
-### api.types.ts
+### adapter.types.ts
 Types file.
 
 ## App path

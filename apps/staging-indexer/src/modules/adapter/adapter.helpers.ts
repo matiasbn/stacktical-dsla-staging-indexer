@@ -1,16 +1,9 @@
-import { toChecksumAddress } from 'web3-utils';
+import { toChecksumAddress, toAscii, hexToUtf8, hexToBytes } from 'web3-utils';
 import * as crypto from 'crypto';
-import { SLI } from './domain/sli.schema';
-import {
-  GetAnalyticsResponse,
-  GetSLIResponse,
-  ValidatorData,
-  ValidatorDataWithIPFSHash,
-  WeekAnalyticsData,
-} from './api.types';
+import { ValidatorData, WeekAnalyticsData } from './adapter.types';
 import { Injectable } from '@nestjs/common';
-import { WeekAnalytics } from './domain/week-analytics.schema';
 import { ConfigService } from '@nestjs/config';
+import * as bs58 from 'bs58';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const createClient = require('ipfs-http-client');
@@ -23,7 +16,7 @@ export const networks = {
 };
 
 @Injectable()
-export class ApiHelpers {
+export class AdapterHelpers {
   constructor(private readonly configService: ConfigService) {}
   createRandomAddress() {
     return toChecksumAddress('0x' + crypto.randomBytes(20).toString('hex'));
@@ -38,22 +31,6 @@ export class ApiHelpers {
     const buffer = Buffer.from(dataString, 'utf-8');
     const { path: ipfsHash } = await ipfsClient.add(buffer);
     return ipfsHash;
-  }
-
-  parseGetSLIResponse(sliData: SLI): GetSLIResponse {
-    const data: ValidatorDataWithIPFSHash = {
-      total_stake: sliData.totalStake,
-      total: sliData.total,
-      hits: sliData.hits,
-      misses: sliData.misses,
-      staking_efficiency_percent: sliData.efficiency,
-      ipfsHash: sliData.ipfsHash,
-      delegators: sliData.delegators,
-    };
-    return {
-      data,
-      sliData: sliData.hits + ',' + sliData.misses,
-    };
   }
 
   createValidatorData(): ValidatorData {
@@ -78,16 +55,6 @@ export class ApiHelpers {
     };
   }
 
-  parseWeekAnalyticsResponse(
-    weekAnalytics: WeekAnalytics
-  ): GetAnalyticsResponse {
-    return {
-      week_id: weekAnalytics.week_id,
-      week_analytics: weekAnalytics.week_analytics,
-      ipfsHash: weekAnalytics.ipfsHash,
-    };
-  }
-
   createWeekAnalyticsData(network: string, week_id: number): WeekAnalyticsData {
     const { validators } = networks[network];
     const week_analytics = validators.reduce(
@@ -101,5 +68,13 @@ export class ApiHelpers {
       week_id,
       week_analytics,
     };
+  }
+
+  ipfsHashToBytes32(ipfsHash: string) {
+    return bs58.decode(ipfsHash).slice(2).toString('hex');
+  }
+
+  bytes32ToIPFSHash(bytes32: string) {
+    return bs58.encode(Buffer.from(`1220${bytes32.replace('0x', '')}`, 'hex'));
   }
 }

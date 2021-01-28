@@ -1,17 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { ValidatorData } from '../api.types';
+import { ValidatorData } from './adapter.types';
 
 @Schema({ timestamps: true })
-export class WeekAnalytics extends Document {
+export class Analytics extends Document {
   @Prop({ required: true })
-  network: string;
+  network_name: string;
 
   @Prop({ required: true })
-  year: number;
+  sla_monitoring_start: number;
 
   @Prop({ required: true })
-  week_id: number;
+  sla_monitoring_end: number;
 
   @Prop({ required: true })
   ipfsHash: string;
@@ -22,4 +22,4 @@ export class WeekAnalytics extends Document {
   };
 }
 
-export const WeekAnalyticsSchema = SchemaFactory.createForClass(WeekAnalytics);
+export const AnalyticsSchema = SchemaFactory.createForClass(Analytics);

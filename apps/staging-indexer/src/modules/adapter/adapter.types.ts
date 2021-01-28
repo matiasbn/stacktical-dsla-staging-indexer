@@ -4,13 +4,18 @@ export interface GetSLIParams {
   sla_monitoring_end: string;
 }
 
-export interface GetSLIResponse {
-  data: ValidatorDataWithIPFSHash;
-  sliData: string;
+export interface GetAnalyticsParams {
+  network_name: string;
+  week_id: number;
+  sla_monitoring_start: number;
+  sla_monitoring_end: number;
 }
 
-export interface GetAnalyticsResponse extends WeekAnalyticsData {
-  ipfsHash: string;
+export interface AdapterResponse {
+  jobRunID: string;
+  data: {
+    result: string;
+  };
 }
 
 export interface WeekAnalyticsData {
@@ -18,10 +23,6 @@ export interface WeekAnalyticsData {
   week_analytics: {
     [key: string]: ValidatorData;
   };
-}
-
-export interface ValidatorDataWithIPFSHash extends ValidatorData {
-  ipfsHash: string;
 }
 
 export interface ValidatorData {
