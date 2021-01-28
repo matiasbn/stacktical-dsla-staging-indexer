@@ -16,6 +16,9 @@ export class Analytics extends Document {
   @Prop({ required: true })
   ipfsHash: string;
 
+  @Prop({ required: true })
+  week_id: number;
+
   @Prop({ required: true, type: Object })
   week_analytics: {
     [key: string]: ValidatorData;

@@ -25,7 +25,7 @@ export class AdapterService {
     );
     if (existingWeekAnalytics) {
       const weekAnalyticsData: WeekAnalyticsData = {
-        week_id: params.week_id,
+        week_id: existingWeekAnalytics.week_id,
         week_analytics: existingWeekAnalytics.week_analytics,
       };
       const ipfsHash = await this.apiHelpers.storeDataOnIFPS(weekAnalyticsData);

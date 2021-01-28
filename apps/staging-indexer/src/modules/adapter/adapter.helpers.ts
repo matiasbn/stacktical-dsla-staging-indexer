@@ -1,4 +1,4 @@
-import { toChecksumAddress, toAscii, hexToUtf8, hexToBytes } from 'web3-utils';
+import { toChecksumAddress } from 'web3-utils';
 import * as crypto from 'crypto';
 import { ValidatorData, WeekAnalyticsData } from './adapter.types';
 import { Injectable } from '@nestjs/common';
@@ -23,8 +23,14 @@ export class AdapterHelpers {
   }
 
   async storeDataOnIFPS(ipfsData): Promise<string> {
+    // const ipfsClient = createClient({
+    //   url: this.configService.get<string>('IPFS_URI'),
+    // });
+
     const ipfsClient = createClient({
-      url: this.configService.get<string>('IPFS_URI'),
+      host: 'ipfs.dsla.network',
+      port: 443,
+      protocol: 'https',
     });
 
     const dataString = JSON.stringify(ipfsData);
@@ -65,7 +71,7 @@ export class AdapterHelpers {
       {}
     );
     return {
-      week_id,
+      week_id: Number(week_id),
       week_analytics,
     };
   }
