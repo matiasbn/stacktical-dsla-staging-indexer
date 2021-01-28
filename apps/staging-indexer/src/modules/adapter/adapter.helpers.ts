@@ -1,9 +1,17 @@
-import { toChecksumAddress } from 'web3-utils';
+import { fromAscii, toChecksumAddress } from 'web3-utils';
 import * as crypto from 'crypto';
-import { ValidatorData, WeekAnalyticsData } from './adapter.types';
-import { Injectable } from '@nestjs/common';
+import {
+  GetSLIParams,
+  SLAData,
+  ValidatorData,
+  WeekAnalyticsData,
+} from './adapter.types';
+import { HttpService, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import Web3 from 'web3';
 import * as bs58 from 'bs58';
+import { SLAABI } from '../../assets/SLAABI';
+import { SLARegistryABI } from '../../assets/SLARegistryABI';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const createClient = require('ipfs-http-client');
@@ -17,25 +25,27 @@ export const networks = {
 
 @Injectable()
 export class AdapterHelpers {
-  constructor(private readonly configService: ConfigService) {}
+  private readonly ipfsClient;
+
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly httpService: HttpService,
+    private readonly logger: Logger
+  ) {
+    this.logger = new Logger(AdapterHelpers.name);
+    this.ipfsClient = createClient({
+      url: this.configService.get<string>('IPFS_URI'),
+    });
+  }
+
   createRandomAddress() {
     return toChecksumAddress('0x' + crypto.randomBytes(20).toString('hex'));
   }
 
   async storeDataOnIFPS(ipfsData): Promise<string> {
-    // const ipfsClient = createClient({
-    //   url: this.configService.get<string>('IPFS_URI'),
-    // });
-
-    const ipfsClient = createClient({
-      host: 'ipfs.dsla.network',
-      port: 443,
-      protocol: 'https',
-    });
-
     const dataString = JSON.stringify(ipfsData);
     const buffer = Buffer.from(dataString, 'utf-8');
-    const { path: ipfsHash } = await ipfsClient.add(buffer);
+    const { path: ipfsHash } = await this.ipfsClient.add(buffer);
     return ipfsHash;
   }
 
@@ -61,26 +71,66 @@ export class AdapterHelpers {
     };
   }
 
-  createWeekAnalyticsData(network: string, week_id: number): WeekAnalyticsData {
+  createWeekAnalyticsData(network: string): WeekAnalyticsData {
     const { validators } = networks[network];
-    const week_analytics = validators.reduce(
+    return validators.reduce(
       (result, validatorName) => ({
         ...result,
         [validatorName]: { ...this.createValidatorData() },
       }),
       {}
     );
-    return {
-      week_id: Number(week_id),
-      week_analytics,
-    };
   }
 
   ipfsHashToBytes32(ipfsHash: string) {
     return bs58.decode(ipfsHash).slice(2).toString('hex');
   }
 
-  bytes32ToIPFSHash(bytes32: string) {
+  bytes32ToIPFSCID(bytes32: string) {
     return bs58.encode(Buffer.from(`1220${bytes32.replace('0x', '')}`, 'hex'));
+  }
+
+  async getIPFSDataFromCID(cid: string) {
+    const { data } = await this.httpService
+      .get(this.configService.get<string>('IPFS_URI') + '/ipfs/' + cid)
+      .toPromise();
+    return data;
+  }
+
+  async getAnalyticsFromSLARegistry(
+    params: GetSLIParams,
+    networkName: string
+  ): Promise<WeekAnalyticsData> {
+    const web3 = new Web3(this.configService.get<string>('WEB3_URI'));
+    const slaRegistryContract = new web3.eth.Contract(
+      SLARegistryABI,
+      params.sla_registry_address
+    );
+    const ipfsBytes32 = await slaRegistryContract.methods
+      .canonicalPeriodsAnalytics(fromAscii(networkName), params.week_id)
+      .call();
+    const ipfsCID = this.bytes32ToIPFSCID(ipfsBytes32);
+    this.logger.debug(
+      'Analytics IPFS url: ' +
+        this.configService.get<string>('IPFS_URI') +
+        '/ipfs/' +
+        ipfsCID
+    );
+    const data = this.getIPFSDataFromCID(ipfsCID);
+    return data;
+  }
+
+  async getSLAData(address: string): Promise<SLAData> {
+    const web3 = new Web3(this.configService.get<string>('WEB3_URI'));
+    const slaContract = new web3.eth.Contract(SLAABI, address);
+    const ipfsCID = await slaContract.methods.ipfsHash().call();
+    this.logger.debug(
+      'SLA IPFS url: ' +
+        this.configService.get<string>('IPFS_URI') +
+        '/ipfs/' +
+        ipfsCID
+    );
+    const data = await this.getIPFSDataFromCID(ipfsCID);
+    return data;
   }
 }

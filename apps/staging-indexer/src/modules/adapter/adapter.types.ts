@@ -1,7 +1,7 @@
 export interface GetSLIParams {
   sla_address: string;
-  sla_monitoring_start: string;
-  sla_monitoring_end: string;
+  week_id: number;
+  sla_registry_address: string;
 }
 
 export interface GetAnalyticsParams {
@@ -19,10 +19,7 @@ export interface AdapterResponse {
 }
 
 export interface WeekAnalyticsData {
-  week_id: number;
-  week_analytics: {
-    [key: string]: ValidatorData;
-  };
+  [key: string]: ValidatorData;
 }
 
 export interface ValidatorData {
@@ -32,4 +29,13 @@ export interface ValidatorData {
   staking_efficiency_percent;
   misses: number;
   delegators: Array<string>;
+}
+
+export interface SLAData {
+  serviceName: string;
+  serviceDescription: string;
+  serviceImage: string;
+  serviceURL: string;
+  serviceAddress: string;
+  serviceTicker: string;
 }

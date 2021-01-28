@@ -16,14 +16,15 @@ export class AdapterController {
   @Post()
   async adapterController(@Body() body): Promise<AdapterResponse> {
     const { id, data } = body;
+    this.logger.log('Request Body:');
     this.logger.log(body);
     switch (data.job_type) {
       case 'get_sli':
         // eslint-disable-next-line no-case-declarations
         const getSLIParams: GetSLIParams = {
-          sla_monitoring_start: data.sla_monitoring_start,
-          sla_monitoring_end: data.sla_monitoring_end,
           sla_address: data.sla_address,
+          week_id: data.week_id,
+          sla_registry_address: data.sla_registry_address,
         };
         return {
           jobRunID: id,

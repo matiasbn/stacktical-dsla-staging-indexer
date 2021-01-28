@@ -1,4 +1,5 @@
 import {
+  HttpModule,
   Logger,
   MiddlewareConsumer,
   Module,
@@ -17,6 +18,7 @@ import { Analytics, AnalyticsSchema } from './analytics.schema';
     MongooseModule.forFeature([
       { name: Analytics.name, schema: AnalyticsSchema },
     ]),
+    HttpModule,
   ],
   controllers: [AdapterController],
   providers: [Logger, AdapterService, AdapterHelpers, AnalyticsRepository],

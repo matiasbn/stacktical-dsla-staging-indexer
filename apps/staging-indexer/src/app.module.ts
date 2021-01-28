@@ -1,4 +1,4 @@
-import { Logger, Module } from '@nestjs/common';
+import { HttpModule, Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MorganModule, MorganInterceptor } from 'nest-morgan';
@@ -23,6 +23,7 @@ class ExtendedLogger extends Logger {
           .default('develop'),
         MONGODB_URI: Joi.string().required(),
         IPFS_URI: Joi.string().required(),
+        WEB3_URI: Joi.string().required(),
       }),
       validationOptions: {
         allowUnknown: true,
